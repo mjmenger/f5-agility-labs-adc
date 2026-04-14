@@ -70,7 +70,7 @@ throttle down a specific source of the excessive load being received.
 |                                                                                                               |
 | 2. Select Statistics -> Dashboard                                                                             |
 |                                                                                                               |
-| 3. Set Dashboard type pulldown (upper left) to "LTM" and click under View (upper right) to "Minio-Cluster-1"  |
+| 3. Set Dashboard type pulldown (upper left) to "LTM" and click under View (upper right) to "AIStor-Cluster-1"  |
 |                                                                                                               |
 | 4. Since traffic is already underway, the moment the spike started may not be visible as displayed below.     |
 |                                                                                                               |
@@ -115,7 +115,7 @@ transactions over time, once a threshold has been first exceeded.
 +---------------------------------------------------------------------------------------------------------------+
 
 +---------------------------------------------------------------------------------------------------------------+
-| 1. Attach the iRule to the Virtual Server in BIG-IP TMUI: Local Traffic -> Virtual Servers-> MinIO-Cluster-1  |                                                             
+| 1. Attach the iRule to the Virtual Server in BIG-IP TMUI: Local Traffic -> Virtual Servers-> AIStor-Cluster-1 |                                                             
 |    (you will find iRules on the "Resources" tab of the Virtual Server configuration).                         |                                                                                  
 |                                                                                                               |
 +---------------------------------------------------------------------------------------------------------------+
