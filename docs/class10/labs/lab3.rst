@@ -23,12 +23,12 @@ BIG-IP integrates with MinIO health endpoints to monitor quorum readiness. With 
 - **Automatically restore writes** once quorum returns.
 - **Outcome**: AI workloads remain consistent and responsive even under node failures.
 
-Task 1. Validate healthy write quorum  Using Lab AIStor Cluster 2
+Task 1. Validate healthy write quorum using Lab AIStor Cluster 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In **BIG-IP TMUI**:
 
-- Navigate to Local **Traffic → Pools → cluster1-write-quorum**.
+- Navigate to Local **Traffic → Pools → cluster2-write-quorum**.
 - Confirm all 4 members are **green**.  Change algorithm to "Least Connections (member) and click **Update**
 
 |lab400|
@@ -37,19 +37,19 @@ In **BIG-IP TMUI**:
 **Expectation:** Pool entirely healthy; write quorum is satisfied.
 
 Review the Monitors, under Local Traffic, where you will see one for read and one for write quorum.
-Open the minio-health-check to see the configuration of the monitor.
+Open the minio-health-check to view the monitor's configuration.
 
 |lab401|
 
-A custom monitor allows one to specify a URL to send requests to and custom strings expected back which serve to check the
-validity of the response. This monitor simply checks for the HTTP return code, 200 Okay suggests positive server health.
+A custom monitor allows one to specify a URL to send requests to and custom strings expected back, which serve to check the
+validity of the response. This monitor simply checks the HTTP return code; 200 OK suggests positive server health.
 
 - Using HTTP "HEAD" as opposed to "GET" lowers network impact as only the HTTP response code is returned, no content is delivered
-- F5 provides more advanced monitors, Extended Application Verfication (EAV), allowing more advanced actions such as using an S3
-  access token/secret to upload a small object, such as the current UNIX timestamp, and immediately downloading the object.
+- F5 provides more advanced monitors, Extended Application Verification (EAV), allowing more advanced actions such as using an S3
+  access token/secret to upload a small object, such as the current UNIX timestamp, and immediately download the object.
 - In this lab, the monitors are already applied to their respective pools.
 
-Task 2.  Run baseline workload (repesenting typical read/write load)
+Task 2.  Run baseline workload (representing typical read/write load)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Open the MinIO Warp bench tool (**UDF -> Components -> Traffic-Gen -> Access -> Firefox**)
@@ -120,35 +120,35 @@ virtual server, still though existing transactions may run to completion.  Withi
 Task 5.  Read-only cluster & verification of failover
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-An F5 iRule or policy could be configured to shift traffic from a pool that is no longer available to another. In
+An F5 iRule or policy could be configured to redirect traffic from a pool that is no longer available to another pool. In
 our configuration, the cluster2-write-quorum automatically fails over to the cluster2-read-quorum pool.  The iRule used can be seen on the Resources
 tab of the virtual server named **minio-cluster-healthcheck**.
 
-Let's look at the pool that the iRule will now be directing S3 traffic towards.
+Let's look at the pool that the iRule will now direct S3 traffic to.
 
 In **BIG-IP TMUI** open (Traffic -> Pools -> Pool List -> *cluster2-read-quorum* -> Members)
 
-Two nodes are shown as down (nodes 2 and 4), however there are **two healthy nodes** (nodes 1 and 3), which is sufficient to satisfy the
+Two nodes are shown as down (nodes 2 and 4), there are **two healthy nodes** (nodes 1 and 3), which are sufficient to satisfy the
 read quorum, hence the pool can still operate and fully accept read operations.
 
-We see in the following screen, the two healthy nodes continue to handle transactions while unhealthy nodes reflect no active connections.
+We see on the following screen that the two healthy nodes continue to handle transactions, while the unhealthy nodes show no active connections.
 
 |lab409|
 
 Open UDF -> AST -> Access -> Grafana; Select **Device Pools**.
 
-Enlarge the Active Pool Connections chart, and select **only** pools cluster2-write-quarum and cluster2-read-quarum.
+Enlarge the Active Pool Connections chart, and select **only** pools cluster2-write-quorum and cluster2-read-quorum.
 
-If the WARP ten minute load generator was active when the ansible disater simulation playbook ran, taking down two nodes, one will be able
+If the WARP ten-minute load generator was active when the Ansible disaster simulation playbook ran, taking down two nodes, one will be able
 to see this moment.
 
-Keep in mind, AST plots a data point only on one-minute boundaries thus the transitions in active connections will
+Keep in mind, AST plots a data point only on one-minute boundaries; the transitions in active connections will
 be expected to follow a slope.   As mentioned earlier, a node failing a health check and being removed from a pool may still finish
 supporting active connections for a number of seconds.
 
 |lab410|
 
-In the chart above, yellow reflects connections to the write-quorum pool and green represents read-quarum pool connections.
+In the chart above, yellow reflects connections to the write-quorum pool and green represents read-quorum pool connections.
 
 **Client Impact:**  AIStor Read-only operations remain available, writes are paused.
 
@@ -169,8 +169,8 @@ In the following, one can see the original Ansible disaster simulation script be
 
 |lab411|
 
-**Expectation:**  Without any operator intervention, or requirements on the part of S3 client configuration, the entire S3 storage solution has recovered.
-Traffic destined for the **write-quarum pool** has automatically resumed successfully handling reads and writes.
+**Expectation:**  Without any operator intervention or S3 client configuration requirements, the entire S3 storage solution has recovered.
+Traffic destined for the **write-quorum pool** has automatically resumed successfully handling reads and writes.
 
 
 Troubleshooting
